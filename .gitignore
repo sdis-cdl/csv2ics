@@ -19,4 +19,4 @@ venv.bak/
 ics/*
 *.xlsx
 *.xls
-*.csv
+Calendar.csv
