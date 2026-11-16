@@ -25,10 +25,18 @@ fCounter = 0  # Counter for ics files created
 now = datetime.now(timezone.utc)
 nowical = now.strftime("%Y%m%dT%H%M%SZ")
 
+srcDir = input("Path to Calendar.csv: ")
+if srcDir == "":
+    srcDir = "Calendar.csv"
+else:
+    srcDir += "/Calendar.csv"
+
+prefix = input("Event prefix: ")
+
 # open and read file
-print("Opening Calendar.csv...")
+print(f"Opening {srcDir}...")
 try:
-    csvFile = open("Calendar.csv", encoding="utf-8-sig")
+    csvFile = open(srcDir, encoding="utf-8-sig")
     data = csv.DictReader(csvFile)
 except:
     print("Error while opening Calendar.csv")
@@ -38,6 +46,10 @@ except:
 
 print("Calendar.csv opened")
 
+if data.fieldnames is None:
+    print("Error: No columns in Calendar.csv")
+    exit()
+    
 if not all (k in data.fieldnames for k in cols.values()):
     print("Error: Required columns missing in Calendar.csv")
     print("You have: " + ", ".join(data.fieldnames))
@@ -62,9 +74,14 @@ for row in data:
 print("Events sorted")
 
 print("Creating ics files...")
+
+destDir = "./ics"
+if not os.path.isdir(destDir):
+    os.mkdir(destDir)
+
 # create ics files
 for key, events in c.items():
-    f = open("ics/"+key+".ics", "w", encoding="utf-8")
+    f = open(f"{destDir}/{key}.ics", "w", encoding="utf-8")
     # file header
     f.write("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//MSASSEN//CSV2ICS//EXPORT\nCALSCALE:GREGORIAN\n")
     eCounter = 0
@@ -87,7 +104,7 @@ for key, events in c.items():
             f.write("DTSTART:" + start.strftime("%Y%m%dT%H%M%S") + "\n")
             f.write("DTEND:" + end.strftime("%Y%m%dT%H%M%S") + "\n")
 
-        f.write("SUMMARY:" + e[cols["sub"]] + "\n")
+        f.write("SUMMARY:" + prefix + e[cols["sub"]] + "\n")
         f.write("LOCATION:" + e[cols["loc"]] + "\n")
         f.write("STATUS:CONFIRMED" + "\n")
         f.write("DESCRIPTION:" + "\n ".join(textwrap.wrap(e[cols["dsc"]], width=60)) + "\n")
