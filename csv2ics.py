@@ -79,6 +79,9 @@ destDir = "./ics"
 if not os.path.isdir(destDir):
     os.mkdir(destDir)
 
+def wrapText(text):
+    return "\n ".join(textwrap.wrap(text, width=60))
+
 # create ics files
 for key, events in c.items():
     f = open(f"{destDir}/{key}.ics", "w", encoding="utf-8")
@@ -104,10 +107,10 @@ for key, events in c.items():
             f.write("DTSTART:" + start.strftime("%Y%m%dT%H%M%S") + "\n")
             f.write("DTEND:" + end.strftime("%Y%m%dT%H%M%S") + "\n")
 
-        f.write("SUMMARY:" + prefix + e[cols["sub"]] + "\n")
+        f.write("SUMMARY:" + wrapText(prefix + e[cols["sub"]]) + "\n")
         f.write("LOCATION:" + e[cols["loc"]] + "\n")
         f.write("STATUS:CONFIRMED" + "\n")
-        f.write("DESCRIPTION:" + "\n ".join(textwrap.wrap(e[cols["dsc"]], width=60)) + "\n")
+        f.write("DESCRIPTION:" + wrapText(e[cols["dsc"]]) + "\n")
         
         # event footer
         f.write("END:VEVENT\n")
