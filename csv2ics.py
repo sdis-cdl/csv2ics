@@ -27,16 +27,18 @@ nowical = now.strftime("%Y%m%dT%H%M%SZ")
 
 srcDir = input("Path to Calendar.csv: ")
 if srcDir == "":
-    srcDir = "Calendar.csv"
+    calPath = "Calendar.csv"
+    destDir = "ics"
 else:
-    srcDir += "/Calendar.csv"
+    calPath = srcDir + "/Calendar.csv"
+    destDir = srcDir + "/ics"
 
 prefix = input("Event prefix: ")
 
 # open and read file
-print(f"Opening {srcDir}...")
+print(f"Opening {calPath}...")
 try:
-    csvFile = open(srcDir, encoding="utf-8-sig")
+    csvFile = open(calPath, encoding="utf-8-sig")
     data = csv.DictReader(csvFile)
 except:
     print("Error while opening Calendar.csv")
@@ -75,7 +77,6 @@ print("Events sorted")
 
 print("Creating ics files...")
 
-destDir = "./ics"
 if not os.path.isdir(destDir):
     os.mkdir(destDir)
 
